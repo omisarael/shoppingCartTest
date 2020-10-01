@@ -20,3 +20,8 @@
 .product-btn {
     font-size: x-small;
 }
+
+.fa-heart {
+    color: palevioletred;
+    cursor: pointer;
+}

@@ -1,5 +1,5 @@
 <div class="row">
     <div class="col-md-4" *ngFor="let i of productsList">
-     <app-product-item [productItem]="i"></app-product-item>
+     <app-product-item [productItem]="i" [addedToWishList]= "wishlist.indexOf(i.id) >= 0" ></app-product-item>
     </div>
   </div>

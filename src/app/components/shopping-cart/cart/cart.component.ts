@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MessengerService } from 'src/app/services/messenger.service';
 import { Product } from 'src/app/models/product';
+import { CartService } from 'src/app/services/cart.service';
+import { CartItem } from 'src/app/models/cart-item';
 
 @Component({
   selector: 'app-cart',
@@ -17,68 +19,38 @@ export class CartComponent implements OnInit {
 
   cartTotal;
 
-  constructor(private msg: MessengerService) { }
+  constructor(private msg: MessengerService, private cartService: CartService) { }
 
   ngOnInit() {
-
-    this.msg.getMsg().subscribe((producto: Product) => {
-      // console.log(producto);
-      this.addProductToCart(producto);
-    });
-
+    this.handlleSubscription();
+    this.loadCartItems();
   }
 
-  addProductToCart(producto: Product) {
+  handlleSubscription() {
+    this.msg.getMsg().subscribe((producto: Product) => { 
+      // tslint:disable-next-line:max-line-length
+     // console.log('3-- Tengo el producto paara agregarlo a cart desde messenger.service' + ' ' , producto.name, 'ejecutando this.loadCartItems();' );
+      this.loadCartItems();
+    });
+  }
 
-    let productExists = false;
+  loadCartItems() {
+    this.cartService.getCartItems().subscribe((items: CartItem[]) => {
+     // console.log('4-- ejecutando loadCartItems() y tengo los items desde cartService.getCartItems()', items);
+      this.cartItems = items;
+      this.calculateCartTotal();
+    });
+  }
 
-    for (const i in this.cartItems) {
-      if (this.cartItems[i].productId === producto.id) {
-        this.cartItems[i].qty++;
-        productExists = true;
-        break;
-      }
-    }
-    if (!productExists) {
-      this.cartItems.push({
-        productId: producto.id,
-        productName: producto.name,
-        qty: 1,
-        price: producto.price
-      });
-    }
-
-    // if (this.cartItems.length === 0) {
-    //   this.cartItems.push({
-    //     productId: producto.id,
-    //     productName: producto.name,
-    //     qty: 1,
-    //     price: producto.price
-    //   });
-    // } else {
-    //   for (const i in this.cartItems) {
-    //     if (this.cartItems[i].productId === producto.id) {
-    //       this.cartItems[i].qty++;
-    //       break;
-    //     } else {
-
-    //       this.cartItems.push({
-    //         productId: producto.id,
-    //         productName: producto.name,
-    //         qty: 1,
-    //         price: producto.price
-    //       });
-    //     }
-    //   }
-    // }
-
-    // se le da valor a cartotal para que haga la suma correta con el operador de asignacion de adicion 
+  calculateCartTotal() {
     this.cartTotal = 0;
     this.cartItems.forEach(item => {
-      console.log(this.cartTotal);
+      // console.log(this.cartTotal);
+      // se le da valor a cartotal para que haga la suma correta con el operador de asignacion de adicion 
       this.cartTotal += (item.qty * item.price);
-      console.log(this.cartTotal);
+      // console.log(this.cartTotal);
     });
   }
+
 
 }
